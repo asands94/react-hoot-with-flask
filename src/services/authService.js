@@ -17,9 +17,10 @@ const signUp = async (formData) => {
             return JSON.parse(atob(data.token.split('.')[1])).payload
         }
         throw new Error('Invalid response from server')
-    } catch (err) {}
-    console.log(err)
-    throw new Error(err)
+    } catch (err) {
+        console.log(err)
+        throw new Error(err)
+    }
 }
 
 const signIn = async (formData) => {
