@@ -34,7 +34,7 @@ const HootDetails = ({ handleDeleteHoot }) => {
                 <header>
                     <p>{hoot.category.toUpperCase()}</p>
                     <h1>{hoot.title}</h1>
-                    <img src={hoot.image_url} width={300} />
+                    <img src={hoot.image_url} width={300} alt={hoot.title} />
                     <p>
                         {`${hoot.author_username} posted on
             ${new Date(hoot.created_at).toLocaleDateString()}`}
