@@ -17,7 +17,6 @@ const App = () => {
     const { user } = useContext(UserContext)
     const [hoots, setHoots] = useState([])
     const navigate = useNavigate()
-    console.log(hoots)
     useEffect(() => {
         const fetchAllHoots = async () => {
             const hootsData = await hootService.index()

@@ -1,87 +1,125 @@
-import { useState, useEffect } from "react";
-import { useParams } from "react-router";
+import { useState, useEffect } from 'react'
+import { useParams } from 'react-router'
 
-import * as hootService from "../../services/hootService";
+import * as hootService from '../../services/hootService'
 
 const HootForm = ({ handleAddHoot, handleUpdateHoot }) => {
-  const { hootId } = useParams();
-  console.log(hootId);
-  const [formData, setFormData] = useState({
-    title: "",
-    text: "",
-    category: "News",
-  });
+    const { hootId } = useParams()
+    const [formData, setFormData] = useState({
+        title: '',
+        text: '',
+        category: 'News',
+    })
+    // Add a new useState for your image
+    const [imageFile, setImageFile] = useState(null)
 
-  useEffect(() => {
-    const fetchHoot = async () => {
-      const hootData = await hootService.show(hootId);
-      setFormData(hootData);
-    };
-    if (hootId) fetchHoot();
-    return () =>
-      setFormData({
-        title: "",
-        text: "",
-        category: "News",
-      });
-  }, [hootId]);
+    useEffect(() => {
+        const fetchHoot = async () => {
+            if (!hootId) return
+            const hootData = await hootService.show(hootId)
+            setFormData({
+                title: hootData.title || '',
+                text: hootData.text || '',
+                category: hootData.category || 'News',
+                // add image_url to the formData
+                // we want to see if a hoot already has an image when we go to edit the hoot
+                image_url: hootData.image_url || '',
+            })
+        }
+        fetchHoot()
+    }, [hootId])
 
-  const handleChange = (evt) => {
-    setFormData({ ...formData, [evt.target.name]: evt.target.value });
-  };
-
-  const handleSubmit = (evt) => {
-    evt.preventDefault();
-    console.log("formData", formData);
-    if (hootId) {
-      handleUpdateHoot(hootId, formData);
-    } else {
-      handleAddHoot(formData);
+    const handleChange = (evt) => {
+        setFormData({ ...formData, [evt.target.name]: evt.target.value })
     }
-    // We'll update this function shortly...
-  };
 
-  return (
-    <main>
-      <h1>{hootId ? "Edit Hoot" : "New Hoot"}</h1>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="title-input">Title</label>
-        <input
-          required
-          type="text"
-          name="title"
-          id="title-input"
-          value={formData.title}
-          onChange={handleChange}
-        />
-        <label htmlFor="text-input">Text</label>
-        <textarea
-          required
-          type="text"
-          name="text"
-          id="text-input"
-          value={formData.text}
-          onChange={handleChange}
-        />
-        <label htmlFor="category-input">Category</label>
-        <select
-          required
-          name="category"
-          id="category-input"
-          value={formData.category}
-          onChange={handleChange}
-        >
-          <option value="News">News</option>
-          <option value="Games">Games</option>
-          <option value="Music">Music</option>
-          <option value="Movies">Movies</option>
-          <option value="Sports">Sports</option>
-          <option value="Television">Television</option>
-        </select>
-        <button type="submit">SUBMIT</button>
-      </form>
-    </main>
-  );
-};
+    // update the handleSubmit
+    const handleSubmit = (evt) => {
+        evt.preventDefault()
 
-export default HootForm;
+        // FormData allows us to send text and files to our backend
+        const data = new FormData()
+
+        // append (add) the form values to FormData
+        data.append('title', formData.title)
+        data.append('text', formData.text)
+        data.append('category', formData.category)
+
+        if (imageFile) {
+            data.append('image_url', imageFile)
+        }
+
+        if (hootId) {
+            // send the updated data to the backend
+            handleUpdateHoot(hootId, data)
+        } else {
+            // send the new data to the backend
+            handleAddHoot(data)
+        }
+    }
+
+    return (
+        <main>
+            <h1>{hootId ? 'Edit Hoot' : 'New Hoot'}</h1>
+            <form onSubmit={handleSubmit}>
+                <label htmlFor='title-input'>Title</label>
+                <input
+                    required
+                    type='text'
+                    name='title'
+                    id='title-input'
+                    value={formData.title}
+                    onChange={handleChange}
+                />
+                <label htmlFor='text-input'>Text</label>
+                <textarea
+                    required
+                    type='text'
+                    name='text'
+                    id='text-input'
+                    value={formData.text}
+                    onChange={handleChange}
+                />
+                <label htmlFor='category-input'>Category</label>
+                <select
+                    required
+                    name='category'
+                    id='category-input'
+                    value={formData.category}
+                    onChange={handleChange}
+                >
+                    <option value='News'>News</option>
+                    <option value='Games'>Games</option>
+                    <option value='Music'>Music</option>
+                    <option value='Movies'>Movies</option>
+                    <option value='Sports'>Sports</option>
+                    <option value='Television'>Television</option>
+                </select>
+                {/* add a new label and input for the image */}
+                <label htmlFor='image_url-input'>Image</label>
+                <input
+                    type='file'
+                    name='image_url'
+                    id='image_url-input'
+                    accept='image/*'
+                    onChange={(e) => setImageFile(e.target.files[0])}
+                />
+                {/* if the hoot is being updated, show a preview of the previously uploaded image */}
+                {hootId && formData.image_url && (
+                    <div>
+                        <p>Current image:</p>
+                        <img
+                            src={formData.image_url}
+                            alt='Current hoot'
+                            style={{ maxWidth: '200px' }}
+                        />
+                    </div>
+                )}
+
+                <button type='submit'>SUBMIT</button>
+            </form>
+        </main>
+    )
+}
+
+export default HootForm

@@ -25,20 +25,19 @@ const HootDetails = ({ handleDeleteHoot }) => {
             commentFormData,
         )
         setHoot({ ...hoot, comments: [newComment, ...hoot.comments] })
-        console.log('commentFormData -->', commentFormData)
     }
 
     if (!hoot) return <main>Loading...</main>
-    console.log(hoot)
     return (
         <main>
             <section>
                 <header>
                     <p>{hoot.category.toUpperCase()}</p>
                     <h1>{hoot.title}</h1>
+                    <img src={hoot.image_url} width={300} />
                     <p>
                         {`${hoot.author_username} posted on
-            ${new Date(hoot.createdAt).toLocaleDateString()}`}
+            ${new Date(hoot.created_at).toLocaleDateString()}`}
                     </p>
                     {hoot.hoot_author_id === user.id && (
                         <>
@@ -57,11 +56,11 @@ const HootDetails = ({ handleDeleteHoot }) => {
                 {!hoot.comments.length && <p>There are no comments.</p>}
 
                 {hoot.comments.map((comment) => (
-                    <article key={comment.id}>
+                    <article key={comment.comment_id}>
                         <header>
                             <p>
                                 {`${comment.comment_author_username} posted on
-                ${new Date(comment.createdAt).toLocaleDateString()}`}
+                ${new Date(comment.comment_created_at).toLocaleDateString()}`}
                             </p>
                         </header>
                         <p>{comment.comment_text}</p>

@@ -10,7 +10,7 @@ const HootList = ({ hoots }) => {
                             <h2>{hoot.title}</h2>
                             <p>
                                 {`${hoot.author_username} posted on
-                ${new Date(hoot.createdAt).toLocaleDateString()}`}
+                ${new Date(hoot.created_at).toLocaleDateString()}`}
                             </p>
                         </header>
                         <p>{hoot.text}</p>
